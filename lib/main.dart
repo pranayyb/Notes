@@ -1,13 +1,11 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:notes/constants/routes.dart';
-import 'package:notes/firebase_options.dart';
+import 'package:notes/services/auth/auth_service.dart';
 import 'package:notes/views/login_view.dart';
 import 'package:notes/views/notes_view.dart';
 import 'package:notes/views/register_view.dart';
 import 'package:notes/views/verify_email_view.dart';
-import 'dart:developer' as devtools show log;
+// import 'dart:developer' as devtools show log;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,45 +33,26 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Center(
-          child: Text("Notes"),
-        ),
-        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-        titleTextStyle: const TextStyle(
-          fontStyle: FontStyle.normal,
-          fontSize: 20.0,
-          fontWeight: FontWeight.normal,
-        ),
-      ),
-      body: FutureBuilder(
-          future: Firebase.initializeApp(
-            options: DefaultFirebaseOptions.currentPlatform,
-          ),
-          // FirebaseAuth.instance.authStateChanges().first,
-          builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.done:
-                final user = FirebaseAuth.instance.currentUser;
-                user?.reload();
-                devtools.log((user?.email).toString());
-                if (user != null) {
-                  if (user.emailVerified) {
-                    return const NotesView();
-                  } else {
-                    return const VerifyEmailView();
-                  }
+    return FutureBuilder(
+        future: AuthService.firebase().initialize(),
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.done:
+              final user = AuthService.firebase().currentUser;
+              // user?.reload();
+              // devtools.log((user?.email).toString());
+              if (user != null) {
+                if (user.isEmailVerified) {
+                  return const NotesView();
                 } else {
-                  return const LoginView();
+                  return const VerifyEmailView();
                 }
-              default:
-                return const Center(child: CircularProgressIndicator());
-            }
-          }),
-    );
+              } else {
+                return const LoginView();
+              }
+            default:
+              return const Center(child: CircularProgressIndicator());
+          }
+        });
   }
 }
-
-enum MenuAction { logout }
-

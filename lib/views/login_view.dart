@@ -1,8 +1,7 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:notes/constants/routes.dart';
-import 'package:notes/firebase_options.dart';
+import 'package:notes/services/auth/auth_exceptions.dart';
+import 'package:notes/services/auth/auth_service.dart';
 import 'dart:developer' as devtools show log;
 
 class LoginView extends StatefulWidget {
@@ -15,6 +14,7 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   late final TextEditingController _email;
   late final TextEditingController _password;
+  bool _isLoading = false; // loading state
 
   @override
   void initState() {
@@ -45,9 +45,7 @@ class _LoginViewState extends State<LoginView> {
         ),
       ),
       body: FutureBuilder(
-        future: Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform,
-        ),
+        future: AuthService.firebase().initialize(),
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.done:
@@ -76,51 +74,60 @@ class _LoginViewState extends State<LoginView> {
                             hintText: "Enter your password"),
                       ),
                     ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        final email = _email.text;
-                        final password = _password.text;
+                    if (_isLoading) // Show loading indicator if loading
+                      const CircularProgressIndicator()
+                    else
+                      ElevatedButton(
+                        onPressed: () async {
+                          setState(() {
+                            _isLoading = true; // Set loading to true
+                          });
 
-                        try {
-                          final userCredential = await FirebaseAuth.instance
-                              .signInWithEmailAndPassword(
-                            email: email,
-                            password: password,
-                          );
-                          final user = FirebaseAuth.instance.currentUser;
-                          if (user?.emailVerified ?? false) {
-                            Navigator.of(context).pushNamedAndRemoveUntil(
-                              notesRoute,
-                              (route) => false,
+                          final email = _email.text;
+                          final password = _password.text;
+
+                          try {
+                            final userCredential =
+                                await AuthService.firebase().logIn(
+                              email: email,
+                              password: password,
                             );
-                          } else {
-                            Navigator.of( context).pushNamedAndRemoveUntil(
-                              verifyEmailRoute,
-                              (route) => false,
-                            );
-                          }
-                          devtools.log(
-                            "User registered: ${userCredential.user?.email}",
-                          );
-                        } on FirebaseAuthException catch (e) {
-                          if (e.code == 'invalid-email') {
+                            devtools.log(userCredential.toString());
+                            final user = AuthService.firebase().currentUser;
+                            if (user?.isEmailVerified ?? false) {
+                              Navigator.of(context).pushNamedAndRemoveUntil(
+                                notesRoute,
+                                (route) => false,
+                              );
+                            } else {
+                              Navigator.of(context).pushNamedAndRemoveUntil(
+                                verifyEmailRoute,
+                                (route) => false,
+                              );
+                            }
+                          } on UserNotFoundAuthException {
                             await showErrorDialog(
-                                context, "Invalid email. Try again!");
-                            devtools.log(e.code);
-                          } else if (e.code == 'invalid-credential') {
-                            await showErrorDialog(context,
-                                "Incorrect Credentials!! Check email and password and try again!");
-                            devtools.log(e.code);
-                          } else {
-                            await showErrorDialog(context, "Error:${e.code}");
+                              context,
+                              "Invalid email. Try again!",
+                            );
+                          } on WrongPasswordAuthException {
+                            await showErrorDialog(
+                              context,
+                              "Incorrect Credentials!! Check email and password and try again!",
+                            );
+                          } on GenericAuthException {
+                            await showErrorDialog(
+                              context,
+                              "Authentication Error!",
+                            );
+                          } finally {
+                            setState(() {
+                              _isLoading = false; // Set loading to false
+                            });
                           }
-                        } catch (e) {
-                          await showErrorDialog(
-                              context, "Error: ${e.toString()}");
-                        }
-                      },
-                      child: const Text('Login'),
-                    ),
+                        },
+                        child: const Text('Login'),
+                      ),
                     TextButton(
                       onPressed: () {
                         Navigator.of(context).pushNamedAndRemoveUntil(
@@ -128,14 +135,15 @@ class _LoginViewState extends State<LoginView> {
                           (route) => false,
                         );
                       },
-                      child: Text("New to Notes? Register here."),
+                      child: const Text("New to Notes? Register here."),
                     ),
                   ],
                 ),
               );
             default:
               return const Center(
-                child: Text('Loading......'),
+                child:
+                    CircularProgressIndicator(), // Show loading while initializing
               );
           }
         },
