@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:notes/constants/routes.dart';
 import 'package:notes/firebase_options.dart';
 import 'dart:developer' as devtools show log;
 
@@ -94,11 +95,20 @@ class _LoginViewState extends State<LoginView> {
                             (route) => false,
                           );
                         } on FirebaseAuthException catch (e) {
-                          if (e.code == 'invalid-credential') {
-                            devtools.log(
-                                "Something bad happened! Please check your email and password!");
+                          if (e.code == 'invalid-email') {
+                            await showErrorDialog(
+                                context, "Invalid email. Try again!");
                             devtools.log(e.code);
+                          } else if (e.code == 'invalid-credential') {
+                            await showErrorDialog(
+                                context, "Incorrect Credentials!! Check email and password and try again!");
+                            devtools.log(e.code);
+                          } else {
+                            await showErrorDialog(context, "Error:${e.code}");
                           }
+                        } catch (e) {
+                          await showErrorDialog(
+                              context, "Error: ${e.toString()}");
                         }
                       },
                       child: const Text('Login'),
@@ -106,7 +116,7 @@ class _LoginViewState extends State<LoginView> {
                     TextButton(
                       onPressed: () {
                         Navigator.of(context).pushNamedAndRemoveUntil(
-                          '/register/',
+                          registerRoute,
                           (route) => false,
                         );
                       },
@@ -124,4 +134,30 @@ class _LoginViewState extends State<LoginView> {
       ),
     );
   }
+}
+
+Future<void> showErrorDialog(
+  BuildContext context,
+  String message,
+) {
+  return showDialog<void>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text("An error occurred!"),
+        content: Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: Text(message),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text("Okay"),
+          ),
+        ],
+      );
+    },
+  );
 }
