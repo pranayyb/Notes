@@ -74,7 +74,7 @@ class _LoginViewState extends State<LoginView> {
                             hintText: "Enter your password"),
                       ),
                     ),
-                    TextButton(
+                    ElevatedButton(
                       onPressed: () async {
                         final email = _email.text;
                         final password = _password.text;
@@ -100,9 +100,14 @@ class _LoginViewState extends State<LoginView> {
                       child: const Text('Login'),
                     ),
                     TextButton(
-                      onPressed: () {},
-                      child: Text("Not registered yet? Register here."),
-                    )
+                      onPressed: () {
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                          '/register/',
+                          (route) => false,
+                        );
+                      },
+                      child: Text("New to Notes? Register here."),
+                    ),
                   ],
                 ),
               );

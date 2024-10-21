@@ -35,7 +35,7 @@ class _RegisterViewState extends State<RegisterView> {
         title: const Center(
           child: Text("Register"),
         ),
-        backgroundColor: const Color.fromRGBO(0, 123, 255, 1),
+        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
         titleTextStyle: const TextStyle(
           fontStyle: FontStyle.normal,
           fontSize: 20.0,
@@ -74,7 +74,7 @@ class _RegisterViewState extends State<RegisterView> {
                             hintText: "Enter your password"),
                       ),
                     ),
-                    TextButton(
+                    ElevatedButton(
                       onPressed: () async {
                         final email = _email.text;
                         final password = _password.text;
@@ -97,6 +97,15 @@ class _RegisterViewState extends State<RegisterView> {
                         }
                       },
                       child: const Text('Register'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                          '/login/',
+                          (route) => false,
+                        );
+                      },
+                      child: Text("Already a member? Login here."),
                     ),
                   ],
                 ),
