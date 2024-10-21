@@ -103,6 +103,9 @@ class _RegisterViewState extends State<RegisterView> {
                             await showErrorDialog(
                                 context, "Please enter a valid email!");
                             // devtools.log("Enter Valid Email!");
+                          } else {
+                            await showErrorDialog(
+                                context, "Something went wrong!");
                           }
                         }
                       },
