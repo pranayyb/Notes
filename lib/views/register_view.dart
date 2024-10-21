@@ -35,7 +35,7 @@ class _RegisterViewState extends State<RegisterView> {
         title: const Center(
           child: Text("Register"),
         ),
-        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+        backgroundColor: const Color.fromRGBO(0, 123, 255, 1),
         titleTextStyle: const TextStyle(
           fontStyle: FontStyle.normal,
           fontSize: 20.0,

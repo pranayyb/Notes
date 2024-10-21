@@ -3,7 +3,7 @@
     package="com.notes">
 
     <application
-        android:label="notes"
+        android:label="Notes"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
