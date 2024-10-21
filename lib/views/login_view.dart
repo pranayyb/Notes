@@ -87,12 +87,20 @@ class _LoginViewState extends State<LoginView> {
                             email: email,
                             password: password,
                           );
+                          final user = FirebaseAuth.instance.currentUser;
+                          if (user?.emailVerified ?? false) {
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                              notesRoute,
+                              (route) => false,
+                            );
+                          } else {
+                            Navigator.of( context).pushNamedAndRemoveUntil(
+                              verifyEmailRoute,
+                              (route) => false,
+                            );
+                          }
                           devtools.log(
                             "User registered: ${userCredential.user?.email}",
-                          );
-                          Navigator.of(context).pushNamedAndRemoveUntil(
-                            '/notes/',
-                            (route) => false,
                           );
                         } on FirebaseAuthException catch (e) {
                           if (e.code == 'invalid-email') {
@@ -100,8 +108,8 @@ class _LoginViewState extends State<LoginView> {
                                 context, "Invalid email. Try again!");
                             devtools.log(e.code);
                           } else if (e.code == 'invalid-credential') {
-                            await showErrorDialog(
-                                context, "Incorrect Credentials!! Check email and password and try again!");
+                            await showErrorDialog(context,
+                                "Incorrect Credentials!! Check email and password and try again!");
                             devtools.log(e.code);
                           } else {
                             await showErrorDialog(context, "Error:${e.code}");
