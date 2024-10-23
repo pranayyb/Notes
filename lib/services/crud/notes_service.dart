@@ -33,12 +33,17 @@ class NotesService {
 
   List<DatabaseNote> _notes = [];
 
-  static final NotesService _shared = NotesService._shared_instance();
-  NotesService._shared_instance();
+  static final NotesService _shared = NotesService._sharedInstance();
+  NotesService._sharedInstance() {
+    _notesStreamController = StreamController<List<DatabaseNote>>.broadcast(
+      onListen: () {
+        _notesStreamController.sink.add(_notes);
+      },
+    );
+  }
   factory NotesService() => _shared;
 
-  final _notesStreamController =
-      StreamController<List<DatabaseNote>>.broadcast();
+  late final StreamController<List<DatabaseNote>> _notesStreamController;
 
   Stream<List<DatabaseNote>> get allNotes => _notesStreamController.stream;
 
@@ -145,7 +150,7 @@ class NotesService {
       throw CouldNotFindUser();
     }
 
-    const text = ' ';
+    const text = '';
     final noteId = await db.insert(noteTable, {
       userIdColumn: owner.id,
       textColumn: text,
@@ -173,7 +178,7 @@ class NotesService {
       where: 'email=?',
       whereArgs: [email.toLowerCase()],
     );
-    if (results.isNotEmpty) {
+    if (results.isEmpty) {
       throw CouldNotFindUser();
     } else {
       return DatabaseUser.fromRow(results.first);

@@ -25,11 +25,11 @@ class _NotesViewState extends State<NotesView> {
     super.initState();
   }
 
-  @override
-  void dispose() {
-    _notesService.close();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   _notesService.close();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -73,13 +73,11 @@ class _NotesViewState extends State<NotesView> {
                   child: Text(
                     "Logout",
                     style: TextStyle(color: Colors.black),
-                    // Set text color to white
                   ),
                 ),
               ];
             },
-            color: const Color.fromARGB(255, 255, 255,
-                255), // Optional: Set the background color of the menu to black
+            color: const Color.fromARGB(255, 255, 255, 255),
           ),
         ],
       ),
@@ -98,24 +96,51 @@ class _NotesViewState extends State<NotesView> {
                         child: const Text("No notes to show here!"),
                       );
                     case ConnectionState.waiting:
-                      return Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: const Center(
-                          child: Text(
-                            "Waiting for notes.....",
-                            style: TextStyle(
-                              fontSize: 18.0, // Adjust the font size as needed
-                            ),
-                          ),
-                        ),
+                      return const Center(
+                        child: CircularProgressIndicator(),
                       );
+                    case ConnectionState.active:
+                      // return const Center(
+                      //   child: Text(
+                      //     "Notes here",
+                      //     style: TextStyle(
+                      //       fontSize: 18.0,
+                      //     ),
+                      //   ),
+                      // );
+                      if (snapshot.hasData) {
+                        final allNotes = snapshot.data as List<DatabaseNote>;
+                        return ListView.builder(
+                          itemCount: allNotes.length,
+                          itemBuilder: (context, index) {
+                            final note = allNotes[index];
+                            print(note);
+                            return ListTile(
+                              title: Text(
+                                note.text,
+                                maxLines: 1,
+                                softWrap: true,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            );
+                          },
+                        );
+                      } else {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
                     default:
-                      return CircularProgressIndicator();
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
                   }
                 },
               );
             default:
-              return const CircularProgressIndicator();
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
           }
         },
       ),
