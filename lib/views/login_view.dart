@@ -87,6 +87,9 @@ class _LoginViewState extends State<LoginView> {
                           final password = _password.text;
 
                           try {
+                            if (email.isEmpty || password.isEmpty) {
+                              throw EmptyEmailAndPassword();
+                            }
                             final userCredential =
                                 await AuthService.firebase().logIn(
                               email: email,
@@ -105,10 +108,19 @@ class _LoginViewState extends State<LoginView> {
                                 (route) => false,
                               );
                             }
+                          } on EmptyEmailAndPassword {
+                            await showErrorDialog(
+                              context,
+                              "Email or password cannot be empty!",
+                            );
                           } on UserNotFoundAuthException {
                             await showErrorDialog(
                               context,
-                              "Invalid email. Try again!",
+                              "User not Found!",
+                            );
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                              registerRoute,
+                              (route) => false,
                             );
                           } on WrongPasswordAuthException {
                             await showErrorDialog(
@@ -160,7 +172,7 @@ Future<void> showErrorDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: const Text("An error occurred!"),
+        title: const Text("Haha got you!😈"),
         content: Padding(
           padding: const EdgeInsets.only(top: 8.0),
           child: Text(message),

@@ -85,6 +85,9 @@ class _RegisterViewState extends State<RegisterView> {
                               final password = _password.text;
 
                               try {
+                                if (email.isEmpty || password.isEmpty) {
+                                  throw EmptyEmailAndPassword();
+                                }
                                 await AuthService.firebase().createUser(
                                   email: email,
                                   password: password,
@@ -92,10 +95,19 @@ class _RegisterViewState extends State<RegisterView> {
                                 AuthService.firebase().sendEmailVerification();
                                 Navigator.of(context)
                                     .pushNamed(verifyEmailRoute);
+                              } on EmptyEmailAndPassword {
+                                await showErrorDialog(
+                                  context,
+                                  "Email or password cannot be empty!",
+                                );
                               } on EmailAlreadyInUseAuthException {
                                 await showErrorDialog(
                                   context,
                                   "Email is already registered. Try logging in.",
+                                );
+                                Navigator.of(context).pushNamedAndRemoveUntil(
+                                  loginRoute,
+                                  (route) => false,
                                 );
                               } on InvalidEmailAuthException {
                                 await showErrorDialog(

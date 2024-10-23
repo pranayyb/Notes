@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:notes/constants/routes.dart';
 import 'package:notes/enums/menu_action.dart';
 import 'package:notes/services/auth/auth_service.dart';
+import 'package:notes/services/crud/notes_service.dart';
 import 'package:notes/utilities/show_error_dialog.dart';
 import 'dart:developer' as devtools show log;
 
@@ -14,6 +15,22 @@ class NotesView extends StatefulWidget {
 }
 
 class _NotesViewState extends State<NotesView> {
+  late final NotesService _notesService;
+  String get userEmail => AuthService.firebase().currentUser!.email!;
+
+  @override
+  void initState() {
+    _notesService = NotesService();
+    _notesService.open();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _notesService.close();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,11 +69,45 @@ class _NotesViewState extends State<NotesView> {
           )
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: const Text(
-          "Hello!",
-        ),
+      body: FutureBuilder(
+        future: _notesService.getOrCreateUser(email: userEmail),
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.done:
+              // return Padding(
+              //   padding: const EdgeInsets.all(16.0),
+              //   child: const Text("Your notes will appear here!"),
+              // );
+              return StreamBuilder(
+                stream: _notesService.allNotes,
+                builder: (context, snapshot) {
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.none:
+                      return Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: const Text("No notes to show here!"),
+                      );
+                    case ConnectionState.waiting:
+                      return Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: const Center(
+                          child: Text(
+                            "Waiting for notes.....",
+                            style: TextStyle(
+                              fontSize: 18.0, // Adjust the font size as needed
+                            ),
+                          ),
+                        ),
+                      );
+                    default:
+                      return CircularProgressIndicator();
+                  }
+                },
+              );
+            default:
+              return const CircularProgressIndicator();
+          }
+        },
       ),
     );
   }
