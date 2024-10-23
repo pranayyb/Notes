@@ -37,16 +37,24 @@ class _NotesViewState extends State<NotesView> {
       appBar: AppBar(
         title: const Padding(
           padding: EdgeInsets.symmetric(vertical: 8.0),
-          child: Text("MyNotes"),
+          child: Text("MyNotes", style: TextStyle(color: Colors.white)),
+        ),
+        backgroundColor: Colors.black,
+        iconTheme: const IconThemeData(
+          color: Colors.white,
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              Navigator.of(context).pushNamed(newNewRoute);
+            },
+          ),
           PopupMenuButton<MenuAction>(
             onSelected: (value) async {
-              // devtools.log(value.toString());
               switch (value) {
                 case MenuAction.logout:
                   final shouldLogout = await showLogOutDialog(context);
-                  // devtools.log(shouldLogout.toString());
                   devtools.log(shouldLogout.toString());
                   if (shouldLogout) {
                     await AuthService.firebase().logOut();
@@ -59,14 +67,20 @@ class _NotesViewState extends State<NotesView> {
               }
             },
             itemBuilder: (context) {
-              return const [
-                PopupMenuItem(
+              return [
+                const PopupMenuItem(
                   value: MenuAction.logout,
-                  child: Text("Logout"),
-                )
+                  child: Text(
+                    "Logout",
+                    style: TextStyle(color: Colors.black),
+                    // Set text color to white
+                  ),
+                ),
               ];
             },
-          )
+            color: const Color.fromARGB(255, 255, 255,
+                255), // Optional: Set the background color of the menu to black
+          ),
         ],
       ),
       body: FutureBuilder(
@@ -74,10 +88,6 @@ class _NotesViewState extends State<NotesView> {
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.done:
-              // return Padding(
-              //   padding: const EdgeInsets.all(16.0),
-              //   child: const Text("Your notes will appear here!"),
-              // );
               return StreamBuilder(
                 stream: _notesService.allNotes,
                 builder: (context, snapshot) {
