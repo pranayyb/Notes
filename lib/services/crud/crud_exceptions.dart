@@ -1,4 +1,3 @@
-
 class DatabaseAlreadyOpenException implements Exception {
   @override
   String toString() => "Database is already open";
@@ -42,4 +41,9 @@ class CouldNotFindNote implements Exception {
 class CouldNotUpdateNote implements Exception {
   @override
   String toString() => "Could not update note";
+}
+
+class UserShouldBeSetBeforeReadingAllNotes implements Exception {
+  @override
+  String toString() => "User should be set before reading all notes";
 }

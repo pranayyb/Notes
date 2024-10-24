@@ -78,8 +78,9 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
   }
 
   @override
+  // ignore: must_call_super
   void dispose() {
-    // super.dispose();
+    super.dispose();
     _deleteNoteIfTextEmpty();
     _saveNoteIfTextNotEmpty();
     _textController.dispose();

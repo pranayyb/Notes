@@ -59,7 +59,7 @@ class _LoginViewState extends State<LoginView> {
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: TextField(
                         controller: _email,
-                        enableSuggestions: false,
+                        // enableSuggestions: true,
                         autocorrect: false,
                         decoration:
                             const InputDecoration(hintText: "Enter your email"),

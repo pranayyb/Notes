@@ -58,7 +58,7 @@ class _RegisterViewState extends State<RegisterView> {
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: TextField(
                         controller: _email,
-                        enableSuggestions: false,
+                        // enableSuggestions: false,
                         autocorrect: false,
                         decoration:
                             const InputDecoration(hintText: "Enter your email"),
