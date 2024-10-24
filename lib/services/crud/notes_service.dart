@@ -6,7 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' show join;
 // import 'package:notes/services/crud/notes_service.dart';
 
-const dbName = 'notes.db';
+const dbName = 'notess.db';
 const noteTable = 'note';
 const userTable = 'user';
 const idColumn = "id";
@@ -34,6 +34,7 @@ class NotesService {
   List<DatabaseNote> _notes = [];
 
   static final NotesService _shared = NotesService._sharedInstance();
+  
   NotesService._sharedInstance() {
     _notesStreamController = StreamController<List<DatabaseNote>>.broadcast(
       onListen: () {
@@ -150,7 +151,7 @@ class NotesService {
       throw CouldNotFindUser();
     }
 
-    const text = '';
+    const text = ' ';
     final noteId = await db.insert(noteTable, {
       userIdColumn: owner.id,
       textColumn: text,
@@ -237,7 +238,9 @@ class NotesService {
     }
     try {
       final docsPath = await getApplicationDocumentsDirectory();
+      // print(docsPath);
       final dbPath = join(docsPath.path, dbName);
+      // print(dbPath);
       final db = await openDatabase(dbPath);
       _db = db;
 

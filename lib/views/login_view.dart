@@ -4,6 +4,8 @@ import 'package:notes/services/auth/auth_exceptions.dart';
 import 'package:notes/services/auth/auth_service.dart';
 import 'dart:developer' as devtools show log;
 
+import 'package:notes/utilities/dialogs/error_dialog.dart';
+
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
 
@@ -162,30 +164,4 @@ class _LoginViewState extends State<LoginView> {
       ),
     );
   }
-}
-
-Future<void> showErrorDialog(
-  BuildContext context,
-  String message,
-) {
-  return showDialog<void>(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text("Haha got you!😈"),
-        content: Padding(
-          padding: const EdgeInsets.only(top: 8.0),
-          child: Text(message),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text("Okay"),
-          ),
-        ],
-      );
-    },
-  );
 }
