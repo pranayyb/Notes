@@ -39,6 +39,7 @@ class _LoginViewState extends State<LoginView> {
         title: const Center(
           child: Text("Login"),
         ),
+        toolbarHeight: 50.0,
         backgroundColor: const Color.fromARGB(255, 0, 0, 0),
         titleTextStyle: const TextStyle(
           fontStyle: FontStyle.normal,
@@ -51,107 +52,111 @@ class _LoginViewState extends State<LoginView> {
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.done:
-              return Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: TextField(
-                        controller: _email,
-                        // enableSuggestions: true,
-                        autocorrect: false,
-                        decoration:
-                            const InputDecoration(hintText: "Enter your email"),
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    // mainAxisAlignment: MainAxisAlignment.center,
+                    // crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: TextField(
+                          controller: _email,
+                          // enableSuggestions: true,
+                          autocorrect: false,
+                          decoration: const InputDecoration(
+                              hintText: "Enter your email"),
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: TextField(
-                        controller: _password,
-                        obscureText: true,
-                        enableSuggestions: false,
-                        autocorrect: false,
-                        decoration: const InputDecoration(
-                            hintText: "Enter your password"),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: TextField(
+                          controller: _password,
+                          obscureText: true,
+                          enableSuggestions: false,
+                          autocorrect: false,
+                          decoration: const InputDecoration(
+                              hintText: "Enter your password"),
+                        ),
                       ),
-                    ),
-                    if (_isLoading) // Show loading indicator if loading
-                      const CircularProgressIndicator()
-                    else
-                      ElevatedButton(
-                        onPressed: () async {
-                          setState(() {
-                            _isLoading = true; // Set loading to true
-                          });
-
-                          final email = _email.text;
-                          final password = _password.text;
-
-                          try {
-                            if (email.isEmpty || password.isEmpty) {
-                              throw EmptyEmailAndPassword();
-                            }
-                            final userCredential =
-                                await AuthService.firebase().logIn(
-                              email: email,
-                              password: password,
-                            );
-                            devtools.log(userCredential.toString());
-                            final user = AuthService.firebase().currentUser;
-                            if (user?.isEmailVerified ?? false) {
-                              Navigator.of(context).pushNamedAndRemoveUntil(
-                                notesRoute,
-                                (route) => false,
-                              );
-                            } else {
-                              Navigator.of(context).pushNamedAndRemoveUntil(
-                                verifyEmailRoute,
-                                (route) => false,
-                              );
-                            }
-                          } on EmptyEmailAndPassword {
-                            await showErrorDialog(
-                              context,
-                              "Email or password cannot be empty!",
-                            );
-                          } on UserNotFoundAuthException {
-                            await showErrorDialog(
-                              context,
-                              "User not Found!",
-                            );
-                            Navigator.of(context).pushNamedAndRemoveUntil(
-                              registerRoute,
-                              (route) => false,
-                            );
-                          } on WrongPasswordAuthException {
-                            await showErrorDialog(
-                              context,
-                              "Incorrect Credentials!! Check email and password and try again!",
-                            );
-                          } on GenericAuthException {
-                            await showErrorDialog(
-                              context,
-                              "Authentication Error!",
-                            );
-                          } finally {
+                      if (_isLoading) // Show loading indicator if loading
+                        const CircularProgressIndicator()
+                      else
+                        ElevatedButton(
+                          onPressed: () async {
                             setState(() {
-                              _isLoading = false; // Set loading to false
+                              _isLoading = true; // Set loading to true
                             });
-                          }
+
+                            final email = _email.text;
+                            final password = _password.text;
+
+                            try {
+                              if (email.isEmpty || password.isEmpty) {
+                                throw EmptyEmailAndPassword();
+                              }
+                              final userCredential =
+                                  await AuthService.firebase().logIn(
+                                email: email,
+                                password: password,
+                              );
+                              devtools.log(userCredential.toString());
+                              final user = AuthService.firebase().currentUser;
+                              if (user?.isEmailVerified ?? false) {
+                                Navigator.of(context).pushNamedAndRemoveUntil(
+                                  notesRoute,
+                                  (route) => false,
+                                );
+                              } else {
+                                Navigator.of(context).pushNamedAndRemoveUntil(
+                                  verifyEmailRoute,
+                                  (route) => false,
+                                );
+                              }
+                            } on EmptyEmailAndPassword {
+                              await showErrorDialog(
+                                context,
+                                "Email or password cannot be empty!",
+                              );
+                            } on UserNotFoundAuthException {
+                              await showErrorDialog(
+                                context,
+                                "User not Found!",
+                              );
+                              Navigator.of(context).pushNamedAndRemoveUntil(
+                                registerRoute,
+                                (route) => false,
+                              );
+                            } on WrongPasswordAuthException {
+                              await showErrorDialog(
+                                context,
+                                "Incorrect Credentials!! Check email and password and try again!",
+                              );
+                            } on GenericAuthException {
+                              await showErrorDialog(
+                                context,
+                                "Authentication Error!",
+                              );
+                            } finally {
+                              setState(() {
+                                _isLoading = false; // Set loading to false
+                              });
+                            }
+                          },
+                          child: const Text('Login'),
+                        ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                            registerRoute,
+                            (route) => false,
+                          );
                         },
-                        child: const Text('Login'),
+                        child: const Text("New to Notes? Register here."),
                       ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                          registerRoute,
-                          (route) => false,
-                        );
-                      },
-                      child: const Text("New to Notes? Register here."),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               );
             default:
