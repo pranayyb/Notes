@@ -1,49 +1,49 @@
-class DatabaseAlreadyOpenException implements Exception {
-  @override
-  String toString() => "Database is already open";
-}
+// class DatabaseAlreadyOpenException implements Exception {
+//   @override
+//   String toString() => "Database is already open";
+// }
 
-class UnableToGetDocumentsDirectory implements Exception {
-  @override
-  String toString() => "Unable to get documents directory";
-}
+// class UnableToGetDocumentsDirectory implements Exception {
+//   @override
+//   String toString() => "Unable to get documents directory";
+// }
 
-class DatabaseIsNotOpen implements Exception {
-  @override
-  String toString() => "Database is not open";
-}
+// class DatabaseIsNotOpen implements Exception {
+//   @override
+//   String toString() => "Database is not open";
+// }
 
-class CouldNotDeleteUser implements Exception {
-  @override
-  String toString() => "Could not delete user";
-}
+// class CouldNotDeleteUser implements Exception {
+//   @override
+//   String toString() => "Could not delete user";
+// }
 
-class UserAlreadyExists implements Exception {
-  @override
-  String toString() => "User already exists";
-}
+// class UserAlreadyExists implements Exception {
+//   @override
+//   String toString() => "User already exists";
+// }
 
-class CouldNotFindUser implements Exception {
-  @override
-  String toString() => "Could not find user";
-}
+// class CouldNotFindUser implements Exception {
+//   @override
+//   String toString() => "Could not find user";
+// }
 
-class CouldNotDeleteNote implements Exception {
-  @override
-  String toString() => "Could not delete note";
-}
+// class CouldNotDeleteNote implements Exception {
+//   @override
+//   String toString() => "Could not delete note";
+// }
 
-class CouldNotFindNote implements Exception {
-  @override
-  String toString() => "Could not find note";
-}
+// class CouldNotFindNote implements Exception {
+//   @override
+//   String toString() => "Could not find note";
+// }
 
-class CouldNotUpdateNote implements Exception {
-  @override
-  String toString() => "Could not update note";
-}
+// class CouldNotUpdateNote implements Exception {
+//   @override
+//   String toString() => "Could not update note";
+// }
 
-class UserShouldBeSetBeforeReadingAllNotes implements Exception {
-  @override
-  String toString() => "User should be set before reading all notes";
-}
+// class UserShouldBeSetBeforeReadingAllNotes implements Exception {
+//   @override
+//   String toString() => "User should be set before reading all notes";
+// }
