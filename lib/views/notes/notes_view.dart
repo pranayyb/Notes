@@ -5,13 +5,13 @@ import 'package:notes/cloud/firebase_cloud_storage.dart';
 // import 'package:flutter/rendering.dart';
 import 'package:notes/constants/routes.dart';
 import 'package:notes/enums/menu_action.dart';
-import 'package:notes/main.dart';
+// import 'package:notes/main.dart';
 import 'package:notes/services/auth/auth_service.dart';
 import 'package:notes/services/auth/bloc/auth_bloc.dart';
 import 'package:notes/services/auth/bloc/auth_event.dart';
 // import 'package:notes/services/crud/notes_service.dart';
 import 'package:notes/utilities/dialogs/logout_dialog.dart';
-import 'dart:developer' as devtools show log;
+// import 'dart:developer' as devtools show log;
 
 import 'package:notes/views/notes/notes_list_view.dart';
 

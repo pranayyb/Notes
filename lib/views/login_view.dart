@@ -5,6 +5,7 @@ import 'package:notes/services/auth/auth_service.dart';
 import 'package:notes/services/auth/bloc/auth_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notes/services/auth/bloc/auth_event.dart';
+import 'package:notes/services/auth/bloc/auth_state.dart';
 // import 'dart:developer' as devtools show log;
 
 import 'package:notes/utilities/dialogs/error_dialog.dart';
@@ -89,53 +90,43 @@ class _LoginViewState extends State<LoginView> {
                               CircularProgressIndicator(), // Show loading while initializing
                         )
                       else
-                        ElevatedButton(
-                          onPressed: () async {
-                            setState(() {
-                              _isLoading = true; // Set loading to true
-                            });
-
-                            final email = _email.text;
-                            final password = _password.text;
-
-                            try {
+                        BlocListener<AuthBloc, AuthState>(
+                          listener: (context, state) async {
+                            if (state is AuthStateLoggedOut) {
+                              if (state.exception
+                                  is UserNotFoundAuthException) {
+                                await showErrorDialog(
+                                    context, 'User not found!');
+                              } else if (state.exception
+                                  is InvalidEmailAuthException) {
+                                await showErrorDialog(
+                                    context, 'Invalid email!');
+                              } else if (state.exception
+                                  is GenericAuthException) {
+                                await showErrorDialog(
+                                    context, 'Authentication Error!');
+                              }
+                            }
+                          },
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              // setState(() {
+                              //   _isLoading = true; // Set loading to true
+                              // });
+                              final email = _email.text;
+                              final password = _password.text;
                               context.read<AuthBloc>().add(
                                     AuthEventLogIn(
                                       email: email,
                                       password: password,
                                     ),
                                   );
-                            } on EmptyEmailAndPassword {
-                              await showErrorDialog(
-                                context,
-                                "Email or password cannot be empty!",
-                              );
-                            } on UserNotFoundAuthException {
-                              await showErrorDialog(
-                                context,
-                                "User not Found!",
-                              );
-                              Navigator.of(context).pushNamedAndRemoveUntil(
-                                registerRoute,
-                                (route) => false,
-                              );
-                            } on WrongPasswordAuthException {
-                              await showErrorDialog(
-                                context,
-                                "Incorrect Credentials!! Check email and password and try again!",
-                              );
-                            } on GenericAuthException {
-                              await showErrorDialog(
-                                context,
-                                "Authentication Error!",
-                              );
-                            } finally {
-                              setState(() {
-                                _isLoading = false; // Set loading to false
-                              });
-                            }
-                          },
-                          child: const Text('Login'),
+                              // setState(() {
+                              //   _isLoading = false; // Set loading to false
+                              // });
+                            },
+                            child: const Text('Login'),
+                          ),
                         ),
                       TextButton(
                         onPressed: () {
