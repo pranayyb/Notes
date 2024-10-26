@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:notes/constants/routes.dart';
 import 'package:notes/services/auth/auth_exceptions.dart';
 import 'package:notes/services/auth/auth_service.dart';
-import 'dart:developer' as devtools show log;
+import 'package:notes/services/auth/bloc/auth_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:notes/services/auth/bloc/auth_event.dart';
+// import 'dart:developer' as devtools show log;
 
 import 'package:notes/utilities/dialogs/error_dialog.dart';
 
@@ -81,7 +84,10 @@ class _LoginViewState extends State<LoginView> {
                         ),
                       ),
                       if (_isLoading) // Show loading indicator if loading
-                        const CircularProgressIndicator()
+                        const Center(
+                          child:
+                              CircularProgressIndicator(), // Show loading while initializing
+                        )
                       else
                         ElevatedButton(
                           onPressed: () async {
@@ -93,27 +99,12 @@ class _LoginViewState extends State<LoginView> {
                             final password = _password.text;
 
                             try {
-                              if (email.isEmpty || password.isEmpty) {
-                                throw EmptyEmailAndPassword();
-                              }
-                              final userCredential =
-                                  await AuthService.firebase().logIn(
-                                email: email,
-                                password: password,
-                              );
-                              devtools.log(userCredential.toString());
-                              final user = AuthService.firebase().currentUser;
-                              if (user?.isEmailVerified ?? false) {
-                                Navigator.of(context).pushNamedAndRemoveUntil(
-                                  notesRoute,
-                                  (route) => false,
-                                );
-                              } else {
-                                Navigator.of(context).pushNamedAndRemoveUntil(
-                                  verifyEmailRoute,
-                                  (route) => false,
-                                );
-                              }
+                              context.read<AuthBloc>().add(
+                                    AuthEventLogIn(
+                                      email: email,
+                                      password: password,
+                                    ),
+                                  );
                             } on EmptyEmailAndPassword {
                               await showErrorDialog(
                                 context,

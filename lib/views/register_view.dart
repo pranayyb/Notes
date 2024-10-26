@@ -76,7 +76,10 @@ class _RegisterViewState extends State<RegisterView> {
                       ),
                     ),
                     _isLoading
-                        ? const CircularProgressIndicator()
+                        ? const Center(
+                            child:
+                                CircularProgressIndicator(), // Show loading while initializing
+                          )
                         : ElevatedButton(
                             onPressed: () async {
                               setState(() {
