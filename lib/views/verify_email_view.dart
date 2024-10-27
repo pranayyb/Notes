@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:notes/constants/routes.dart';
-import 'package:notes/services/auth/auth_service.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:notes/constants/routes.dart';
+// import 'package:notes/services/auth/auth_service.dart';
+import 'package:notes/services/auth/bloc/auth_bloc.dart';
+import 'package:notes/services/auth/bloc/auth_event.dart';
 
 class VerifyEmailView extends StatefulWidget {
   const VerifyEmailView({super.key});
@@ -8,6 +11,7 @@ class VerifyEmailView extends StatefulWidget {
   @override
   State<VerifyEmailView> createState() => _VerifyEmailViewState();
 }
+
 class _VerifyEmailViewState extends State<VerifyEmailView> {
   bool _isSendingEmailLoading = false; // Track email sending button state
   bool _isLoggingOutLoading = false; // Track logout button state
@@ -42,31 +46,12 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                         setState(() {
                           _isSendingEmailLoading = true; // Start email loading
                         });
-
-                        final user = AuthService.firebase().currentUser;
-                        if (user != null) {
-                          try {
-                            await AuthService.firebase()
-                                .sendEmailVerification();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Verification email sent.'),
-                              ),
-                            );
-                          } catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content:
-                                    Text('Failed to send verification email.'),
-                              ),
-                            );
-                          } finally {
-                            setState(() {
-                              _isSendingEmailLoading =
-                                  false; // Stop email loading
-                            });
-                          }
-                        }
+                        context
+                            .read<AuthBloc>()
+                            .add(const AuthEventSendEmailVerification());
+                        setState(() {
+                          _isSendingEmailLoading = false; // Stop email loading
+                        });
                       },
                       child: const Text("Hit me!!"),
                     ),
@@ -76,22 +61,16 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
               _isLoggingOutLoading
                   ? const CircularProgressIndicator()
                   : TextButton(
-                      onPressed: () async {
+                      onPressed: () {
                         setState(() {
                           _isLoggingOutLoading = true; // Start logout loading
                         });
-
-                        try {
-                          await AuthService.firebase().logOut();
-                          Navigator.of(context).pushNamedAndRemoveUntil(
-                            loginRoute,
-                            (route) => false,
-                          );
-                        } finally {
-                          setState(() {
-                            _isLoggingOutLoading = false; // Stop logout loading
-                          });
-                        }
+                        context.read<AuthBloc>().add(
+                              const AuthEventLogout(),
+                            );
+                        setState(() {
+                          _isLoggingOutLoading = false; // Stop logout loading
+                        });
                       },
                       child: const Text("Restart!"),
                     ),

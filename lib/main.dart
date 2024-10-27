@@ -10,6 +10,7 @@ import 'package:notes/views/login_view.dart';
 import 'package:notes/views/notes/create_update_note_view.dart';
 import 'package:notes/views/notes/notes_view.dart';
 import 'package:notes/views/register_view.dart';
+// import 'package:notes/views/register_view.dart';
 import 'package:notes/views/verify_email_view.dart';
 // import 'dart:developer' as devtools show log;
 
@@ -29,10 +30,6 @@ void main() {
       child: const HomePage(),
     ),
     routes: {
-      loginRoute: (context) => const LoginView(),
-      registerRoute: (context) => const RegisterView(),
-      notesRoute: (context) => const NotesView(),
-      verifyEmailRoute: (context) => const VerifyEmailView(),
       createOrUpdateNoteRoute: (context) => const CreateUpdateNoteView(),
     },
   ));
@@ -51,6 +48,8 @@ class HomePage extends StatelessWidget {
         return const VerifyEmailView();
       } else if (state is AuthStateLoggedOut) {
         return const LoginView();
+      } else if (state is AuthStateRegistering) {
+        return const RegisterView();
       } else {
         return const Scaffold(
           body: CircularProgressIndicator(),
